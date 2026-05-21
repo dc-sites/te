@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Popup Ads Admin - Learny</title>
-  <link rel="icon" href="https://i.postimg.cc/8PHF4Qp0/cropped-circle-image-3.png" type="image/png">
+  
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- HTML2PDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
   <style>
     :root {
@@ -38,438 +40,109 @@
     }
     
     /* ===== LOGIN SCREEN ===== */
-    #login-screen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      padding: 20px;
-    }
-    
-    .login-box {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 40px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 25px 80px rgba(0,0,0,0.25);
-      animation: slideUp 0.4s ease;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .login-logo {
-      text-align: center;
-      margin-bottom: 32px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .login-logo i {
-      font-size: 42px;
-      color: var(--primary);
-      margin-bottom: 12px;
-    }
-    
-    .login-logo h2 {
-      color: var(--text);
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    
-    .login-logo p {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-    
+    #login-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+    .login-box { background: var(--white); border-radius: var(--radius); padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 25px 80px rgba(0,0,0,0.25); animation: slideUp 0.4s ease; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .login-logo { text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .login-logo i { font-size: 42px; color: var(--primary); margin-bottom: 12px; }
+    .login-logo h2 { color: var(--text); font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .login-logo p { color: var(--text-muted); font-size: 14px; }
     .form-group { margin-bottom: 20px; }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      font-size: 14px;
-      color: var(--text);
-    }
-    
-    .form-group input, 
-    .form-group select, 
-    .form-group textarea {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 15px;
-      transition: var(--transition);
-      background: var(--white);
-      color: var(--text);
-    }
-    
-    .form-group input:focus, 
-    .form-group select:focus, 
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    }
-    
-    .login-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    .login-btn:hover { 
-      opacity: 0.95; 
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-    }
-    
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--text); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; transition: var(--transition); background: var(--white); color: var(--text); }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
+    .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 15px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .login-btn:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3); }
     .login-btn:active { transform: translateY(0); }
-    
-    .error-msg {
-      background: #fff5f5;
-      color: var(--danger);
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 20px;
-      font-size: 13px;
-      display: none;
-      text-align: center;
-      border-left: 4px solid var(--danger);
-    }
-    
+    .error-msg { background: #fff5f5; color: var(--danger); padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px; display: none; text-align: center; border-left: 4px solid var(--danger); }
     .error-msg.show { display: block; animation: shake 0.3s; }
-    
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
-    }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     
     /* ===== ADMIN DASHBOARD ===== */
     #admin-panel { display: none; }
-    
-    .container {
-      max-width: 950px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-    
-    .header {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 20px 28px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    
-    .header h1 {
-      color: var(--text);
-      font-size: 22px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
+    .container { max-width: 950px; margin: 0 auto; padding: 24px; }
+    .header { background: var(--white); border-radius: var(--radius); padding: 20px 28px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+    .header h1 { color: var(--text); font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .header h1 i { color: var(--primary); }
+    .logout-btn { padding: 10px 20px; background: var(--white); border: 2px solid var(--danger); color: var(--danger); border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
+    .logout-btn:hover { background: var(--danger); color: white; }
     
-    .logout-btn {
-      padding: 10px 20px;
-      background: var(--white);
-      border: 2px solid var(--danger);
-      color: var(--danger);
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .logout-btn:hover {
-      background: var(--danger);
-      color: white;
-    }
-    
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 28px;
+    /* ===== NEW: REAL-TIME STATS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
       margin-bottom: 24px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
     }
-    
-    .card h3 {
-      margin-bottom: 20px;
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .card h3 i { color: var(--primary); }
-    
-    textarea { 
-      min-height: 70px; 
-      resize: vertical; 
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-    }
-    
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    }
-    
-    .btn {
-      padding: 10px 22px;
-      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      margin-right: 8px;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .btn:hover { 
-      opacity: 0.95; 
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
-    }
-    
-    .btn:active { transform: translateY(0); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    
-    .btn-danger { background: var(--danger); }
-    .btn-danger:hover { box-shadow: 0 4px 14px rgba(231, 76, 60, 0.3); }
-    
-    .btn-warning { background: var(--warning); }
-    .btn-warning:hover { box-shadow: 0 4px 14px rgba(243, 156, 18, 0.3); }
-    
-    .btn-success { background: var(--success); }
-    .btn-success:hover { box-shadow: 0 4px 14px rgba(39, 174, 96, 0.3); }
-    
-    .ad-card {
+    .stat-card {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 18px;
-      margin-bottom: 14px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
+      text-align: center;
+      box-shadow: var(--shadow);
       transition: var(--transition);
     }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .stat-card i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); display: block; }
+    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; display: block; }
+    .stat-loading { color: var(--text-muted); font-size: 14px; }
+
+    .card { background: var(--white); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .card h3 { margin-bottom: 20px; color: var(--text); font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .card h3 i { color: var(--primary); }
+    textarea { min-height: 70px; resize: vertical; width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; color: var(--text); }
+    textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
+    .btn { padding: 10px 22px; background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; cursor: pointer; margin-right: 8px; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-danger { background: var(--danger); } .btn-danger:hover { box-shadow: 0 4px 14px rgba(231, 76, 60, 0.3); }
+    .btn-warning { background: var(--warning); } .btn-warning:hover { box-shadow: 0 4px 14px rgba(243, 156, 18, 0.3); }
+    .btn-success { background: var(--success); } .btn-success:hover { box-shadow: 0 4px 14px rgba(39, 174, 96, 0.3); }
+    .btn-secondary { background: var(--text-muted); } .btn-secondary:hover { box-shadow: 0 4px 14px rgba(102, 102, 102, 0.3); }
     
-    .ad-card:hover { 
-      box-shadow: var(--shadow-hover);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-    
-    .ad-card img {
-      width: 90px;
-      height: 68px;
-      object-fit: cover;
-      border-radius: 10px;
-      background: var(--bg-light);
-      flex-shrink: 0;
-      border: 1px solid var(--border);
-    }
-    
+    .ad-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 14px; display: flex; gap: 16px; align-items: flex-start; transition: var(--transition); }
+    .ad-card:hover { box-shadow: var(--shadow-hover); border-color: var(--primary); transform: translateY(-2px); }
+    .ad-card img { width: 90px; height: 68px; object-fit: cover; border-radius: 10px; background: var(--bg-light); flex-shrink: 0; border: 1px solid var(--border); }
     .ad-info { flex: 1; min-width: 0; }
+    .ad-title { font-weight: 600; margin-bottom: 6px; font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ad-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+    .ad-stats { font-size: 12px; color: var(--text-muted); margin: 6px 0; display: flex; gap: 16px; flex-wrap: wrap; }
+    .ad-stats span { display: flex; align-items: center; gap: 4px; }
+    .ad-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .status-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .status-paused { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .type-badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px; }
+    .type-normal { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .type-skippable { background: #ffedd5; color: #c2410c; border: 1px solid #fdba74; }
+    .empty { text-align: center; color: var(--text-muted); padding: 48px 24px; font-size: 14px; background: var(--bg-light); border-radius: var(--radius-sm); border: 2px dashed var(--border); }
+    .empty i { font-size: 32px; color: #ccc; margin-bottom: 12px; display: block; }
+    .type-info { font-size: 13px; color: var(--text-muted); background: #f0f4ff; padding: 12px 16px; border-radius: var(--radius-sm); margin-top: 10px; display: none; border-left: 3px solid var(--primary); line-height: 1.5; }
+    .type-info.show { display: block; } .type-info strong { color: var(--text); }
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
     
-    .ad-title { 
-      font-weight: 600; 
-      margin-bottom: 6px; 
-      font-size: 14px; 
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    /* ===== NEW: PREVIEW MODAL ===== */
+    #previewModal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    #previewModal.show { display: flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content { background: var(--white); border-radius: var(--radius); max-width: 95%; width: 420px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); }
+    .modal-close:hover { background: var(--bg-light); color: var(--danger); }
+    .modal-body { padding: 20px; }
+    .preview-note { font-size: 12px; color: var(--text-muted); margin-top: 12px; text-align: center; background: var(--bg-light); padding: 8px; border-radius: 8px; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
     
-    .ad-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      line-height: 1.4;
-    }
-    
-    .ad-stats { 
-      font-size: 12px; 
-      color: var(--text-muted); 
-      margin: 6px 0;
-      display: flex; 
-      gap: 16px; 
-      flex-wrap: wrap;
-    }
-    
-    .ad-stats span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .ad-actions { 
-      display: flex; 
-      gap: 8px; 
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    
-    .status-badge {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    
-    .status-active { 
-      background: #dcfce7; 
-      color: #166534;
-      border: 1px solid #86efac;
-    }
-    
-    .status-paused { 
-      background: #fef3c7; 
-      color: #92400e;
-      border: 1px solid #fcd34d;
-    }
-    
-    .type-badge { 
-      padding: 4px 10px; 
-      border-radius: 6px; 
-      font-size: 10px; 
-      font-weight: 600; 
-      margin-left: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .type-normal { 
-      background: #dbeafe; 
-      color: #1e40af;
-      border: 1px solid #93c5fd;
-    }
-    
-    .type-skippable { 
-      background: #ffedd5; 
-      color: #c2410c;
-      border: 1px solid #fdba74;
-    }
-    
-    .empty { 
-      text-align: center; 
-      color: var(--text-muted); 
-      padding: 48px 24px;
-      font-size: 14px;
-      background: var(--bg-light);
-      border-radius: var(--radius-sm);
-      border: 2px dashed var(--border);
-    }
-    
-    .empty i {
-      font-size: 32px;
-      color: #ccc;
-      margin-bottom: 12px;
-      display: block;
-    }
-    
-    .type-info { 
-      font-size: 13px; 
-      color: var(--text-muted); 
-      background: #f0f4ff; 
-      padding: 12px 16px; 
-      border-radius: var(--radius-sm); 
-      margin-top: 10px; 
-      display: none;
-      border-left: 3px solid var(--primary);
-      line-height: 1.5;
-    }
-    
-    .type-info.show { display: block; }
-    .type-info strong { color: var(--text); }
+    /* ===== PDF EXPORT HIDDEN CONTAINER ===== */
+    #pdf-container { position: absolute; left: -9999px; top: 0; width: 800px; background: #fff; padding: 20px; font-family: 'Segoe UI', sans-serif; }
     
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .header { flex-direction: column; gap: 16px; text-align: center; }
-      .container { padding: 16px; }
-      .card { padding: 22px; }
-    }
-    
-    @media (max-width: 600px) {
-      .ad-card { flex-direction: column; }
-      .ad-card img { width: 100%; height: 150px; }
-      .login-box { padding: 32px 24px; }
-      .btn { width: 100%; justify-content: center; margin-right: 0; margin-bottom: 8px; }
-      .ad-actions { flex-direction: column; }
-    }
-    
-    /* ===== UTILITIES ===== */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 24px 0;
-    }
-    
-    .text-center { text-align: center; }
-    .mt-0 { margin-top: 0; }
-    .mb-0 { margin-bottom: 0; }
+    @media (max-width: 768px) { .header { flex-direction: column; gap: 16px; text-align: center; } .container { padding: 16px; } .card { padding: 22px; } }
+    @media (max-width: 600px) { .ad-card { flex-direction: column; } .ad-card img { width: 100%; height: 150px; } .login-box { padding: 32px 24px; } .btn { width: 100%; justify-content: center; margin-right: 0; margin-bottom: 8px; } .ad-actions { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -499,9 +172,38 @@
       <!-- Header -->
       <div class="header">
         <h1><i class="fa-solid fa-bullhorn"></i> Popup Ads Manager</h1>
-        <button class="logout-btn" id="logoutBtn">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-secondary" id="exportAllBtn" onclick="exportAllToPDF()">
+            <i class="fa-solid fa-file-pdf"></i> Export All PDF
+          </button>
+          <button class="logout-btn" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- NEW: REAL-TIME STATS DASHBOARD -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fa-solid fa-eye"></i>
+          <span class="stat-value" id="statViews"><span class="stat-loading"><i class="fa-solid fa-circle-notch fa-spin"></i></span></span>
+          <span class="stat-label">Total Views</span>
+        </div>
+        <div class="stat-card">
+          <i class="fa-solid fa-hand-pointer"></i>
+          <span class="stat-value" id="statClicks"><span class="stat-loading"><i class="fa-solid fa-circle-notch fa-spin"></i></span></span>
+          <span class="stat-label">Total Clicks</span>
+        </div>
+        <div class="stat-card">
+          <i class="fa-solid fa-chart-line"></i>
+          <span class="stat-value" id="statCTR"><span class="stat-loading"><i class="fa-solid fa-circle-notch fa-spin"></i></span></span>
+          <span class="stat-label">Click-Through Rate</span>
+        </div>
+        <div class="stat-card">
+          <i class="fa-solid fa-toggle-on"></i>
+          <span class="stat-value" id="statActive"><span class="stat-loading"><i class="fa-solid fa-circle-notch fa-spin"></i></span></span>
+          <span class="stat-label">Active Ads</span>
+        </div>
       </div>
 
       <!-- Add New Ad Form -->
@@ -542,14 +244,32 @@
       <!-- Ads List -->
       <div class="card">
         <h3><i class="fa-solid fa-list"></i> All Ads</h3>
-        <div id="adsList"><div class="empty"><i class="fa-solid fa-inbox"></i>No ads created yet. Add your first ad above!</div></div>
+        <div id="adsList"><div class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading ads...</div></div>
       </div>
     </div>
   </div>
 
+  <!-- NEW: LIVE PREVIEW MODAL -->
+  <div id="previewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-eye"></i> Live Preview</h3>
+        <button class="modal-close" onclick="closePreview()">&times;</button>
+      </div>
+      <div class="modal-body" id="previewBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePreview()">Close</button>
+        <button class="btn" onclick="exportSinglePDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: HIDDEN PDF CONTAINER -->
+  <div id="pdf-container"></div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // ===== CONFIG =====
     const ADMIN_PASSWORD = "DilaC2007**";
@@ -569,6 +289,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const adsCollection = collection(db, "ads");
+    let currentAdsData = []; // Store for PDF export
 
     // DOM Elements
     const loginScreen = document.getElementById('login-screen');
@@ -580,8 +301,10 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const adTypeSelect = document.getElementById('adType');
     const typeInfo = document.getElementById('typeInfo');
+    const previewModal = document.getElementById('previewModal');
+    const previewBody = document.getElementById('previewBody');
+    const pdfContainer = document.getElementById('pdf-container');
 
-    // Type info texts
     const typeDescriptions = {
       normal: "<i class='fa-solid fa-lock'></i> <strong>Normal Ad:</strong> Shows once per user. Won't reappear until you pause &amp; play it again in this panel. Perfect for promotions.",
       skippable: "<i class='fa-solid fa-forward-fast'></i> <strong>Skippable Ad:</strong> Shows on every page reload. Users can skip after 3 seconds or click the CTA button. Great for high-frequency campaigns."
@@ -593,6 +316,7 @@
       if (session === 'authenticated') {
         loginScreen.style.display = 'none';
         adminPanel.style.display = 'block';
+        initRealtimeStats();
         loadAds();
       }
     }
@@ -602,6 +326,7 @@
         localStorage.setItem(SESSION_KEY, 'authenticated');
         loginScreen.style.display = 'none';
         adminPanel.style.display = 'block';
+        initRealtimeStats();
         loadAds();
         return true;
       }
@@ -616,13 +341,9 @@
       hideError(loginError);
     }
 
-    function showError(el, msg) {
-      el.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + msg;
-      el.classList.add('show');
-    }
+    function showError(el, msg) { el.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + msg; el.classList.add('show'); }
     function hideError(el) { el.classList.remove('show'); }
 
-    // ===== EVENT LISTENERS =====
     loginBtn.addEventListener('click', () => {
       hideError(loginError);
       const password = adminPass.value.trim();
@@ -633,18 +354,30 @@
     adminPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginBtn.click(); });
     logoutBtn.addEventListener('click', logout);
 
-    // Type selector info
-    adTypeSelect?.addEventListener('change', (e) => {
-      typeInfo.innerHTML = typeDescriptions[e.target.value] || '';
-      typeInfo.classList.add('show');
-    });
-    // Trigger initial info
-    if (adTypeSelect) {
-      typeInfo.innerHTML = typeDescriptions[adTypeSelect.value] || '';
-      typeInfo.classList.add('show');
+    adTypeSelect?.addEventListener('change', (e) => { typeInfo.innerHTML = typeDescriptions[e.target.value] || ''; typeInfo.classList.add('show'); });
+    if (adTypeSelect) { typeInfo.innerHTML = typeDescriptions[adTypeSelect.value] || ''; typeInfo.classList.add('show'); }
+
+    // ===== REAL-TIME STATS =====
+    function initRealtimeStats() {
+      onSnapshot(adsCollection, (snapshot) => {
+        let totalViews = 0, totalClicks = 0, activeCount = 0;
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          totalViews += data.views || 0;
+          totalClicks += data.clicks || 0;
+          if (data.isActive) activeCount++;
+        });
+        document.getElementById('statViews').textContent = totalViews.toLocaleString();
+        document.getElementById('statClicks').textContent = totalClicks.toLocaleString();
+        document.getElementById('statActive').textContent = activeCount;
+        const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : '0.00';
+        document.getElementById('statCTR').textContent = ctr + '%';
+      }, (error) => {
+        console.error("Stats error:", error);
+      });
     }
 
-    // Add New Ad
+    // ===== ADD AD =====
     document.getElementById('addAd')?.addEventListener('click', async () => {
       const btn = document.getElementById('addAd');
       const adType = document.getElementById('adType')?.value || 'normal';
@@ -656,9 +389,7 @@
       hideError(formError);
       if (!imageUrl || !description || !buttonText) { showError(formError, 'Please fill all required fields (*)'); return; }
 
-      btn.disabled = true; 
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
-      
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
       try {
         await addDoc(adsCollection, {
           adType, imageUrl, description, buttonText,
@@ -676,29 +407,24 @@
       } catch (error) {
         console.error('Error adding ad:', error);
         showError(formError, error.message || 'Failed to publish ad.');
-      } finally { 
-        btn.disabled = false; 
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Ad';
-      }
+      } finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Ad'; }
     });
 
-    // Load Ads
+    // ===== LOAD ADS =====
     async function loadAds() {
       const list = document.getElementById('adsList');
       list.innerHTML = '<div class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading ads...</div>';
-      
       try {
         const q = query(adsCollection, orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
+        currentAdsData = [];
         
-        if (snapshot.empty) { 
-          list.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No ads created yet. Add your first ad above!</div>'; 
-          return; 
-        }
+        if (snapshot.empty) { list.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No ads created yet. Add your first ad above!</div>'; return; }
 
         let html = '';
         snapshot.forEach(docSnap => {
           const ad = { id: docSnap.id, ...docSnap.data() };
+          currentAdsData.push(ad);
           const statusClass = ad.isActive ? 'status-active' : 'status-paused';
           const statusText = ad.isActive ? 'Active' : 'Paused';
           const statusIcon = ad.isActive ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-pause"></i>';
@@ -710,10 +436,7 @@
             <div class="ad-card">
               <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/90x68/e0e0e0/666?text=Ad'" alt="Ad">
               <div class="ad-info">
-                <div class="ad-title">
-                  ${escapeHtml(ad.description)} 
-                  <span class="type-badge ${typeClass}">${typeIcon} ${typeLabel}</span>
-                </div>
+                <div class="ad-title">${escapeHtml(ad.description)} <span class="type-badge ${typeClass}">${typeIcon} ${typeLabel}</span></div>
                 <div class="ad-desc">${escapeHtml(ad.buttonText)} → ${ad.buttonUrl ? shortenUrl(ad.buttonUrl) : 'No link'}</div>
                 <div class="ad-stats">
                   <span><i class="fa-regular fa-eye"></i> ${ad.views || 0} views</span>
@@ -722,65 +445,121 @@
                 </div>
                 <span class="status-badge ${statusClass}">${statusIcon} ${statusText}</span>
                 <div class="ad-actions">
+                  <button class="btn btn-secondary" onclick="openPreview('${ad.id}')"><i class="fa-solid fa-eye"></i> Preview</button>
                   <button class="btn ${ad.isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleAd('${ad.id}', ${!ad.isActive})">
                     ${ad.isActive ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Play'}
                   </button>
-                  <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">
-                    <i class="fa-solid fa-trash"></i> Delete
-                  </button>
+                  <button class="btn btn-danger" onclick="deleteAd('${ad.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
                 </div>
               </div>
             </div>
           `;
         });
         list.innerHTML = html;
-        
       } catch (error) {
         console.error('Error loading ads:', error);
         list.innerHTML = `<div class="empty" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${error.message}</div>`;
       }
     }
 
-    // Toggle Ad (Pause/Play)
     window.toggleAd = async (id, newStatus) => {
       try {
         const updateData = { isActive: newStatus };
         if (newStatus) updateData.lastActivatedAt = Date.now();
         await updateDoc(doc(db, "ads", id), updateData);
         loadAds();
-      } catch (error) { 
-        alert('Failed to update: ' + error.message); 
-      }
+      } catch (error) { alert('Failed to update: ' + error.message); }
     };
 
-    // Delete Ad
     window.deleteAd = async (id) => {
-      if (!confirm('Delete this ad permanently? This cannot be undone.')) return;
-      try { 
-        await deleteDoc(doc(db, "ads", id)); 
-        loadAds(); 
-      } catch (error) { 
-        alert('Failed to delete: ' + error.message); 
-      }
+      if (!confirm('Delete this ad permanently?')) return;
+      try { await deleteDoc(doc(db, "ads", id)); loadAds(); } catch (error) { alert('Failed to delete: ' + error.message); }
+    };
+
+    // ===== LIVE PREVIEW =====
+    window.openPreview = (id) => {
+      const ad = currentAdsData.find(a => a.id === id);
+      if (!ad) return;
+      
+      previewBody.innerHTML = `
+        <style>
+          .popup-box { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); text-align: center; }
+          .popup-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #f5f5f5; }
+          .popup-desc { font-size: 14px; color: #333; margin-bottom: 16px; line-height: 1.4; }
+          .popup-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: default; opacity: 0.8; }
+          .ad-footer { margin-top: 14px; padding-top: 10px; border-top: 1px solid #eee; font-size: 11px; color: #888; }
+          .ad-footer a { color: #667eea; text-decoration: none; }
+        </style>
+        <div class="popup-box">
+          <img src="${ad.imageUrl}" alt="Ad Preview" class="popup-img" onerror="this.src='https://via.placeholder.com/380x180?text=Ad+Image'">
+          <p class="popup-desc">${escapeHtml(ad.description)}</p>
+          <button class="popup-btn">${escapeHtml(ad.buttonText)}</button>
+          <div class="ad-footer">Ads by <a href="https://hexasolutions.online" target="_blank">Hexa Solutions</a></div>
+        </div>
+        <p class="preview-note"><i class="fa-solid fa-info-circle"></i> Preview mode: Buttons are disabled to prevent tracking</p>
+      `;
+      previewModal.classList.add('show');
+    };
+
+    window.closePreview = () => { previewModal.classList.remove('show'); };
+    previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); });
+
+    // ===== PDF EXPORT =====
+    window.exportAllToPDF = async () => {
+      if (currentAdsData.length === 0) { alert('No ads to export.'); return; }
+      
+      let tableHtml = `
+        <h2 style="color:#667eea; border-bottom:2px solid #667eea; padding-bottom:10px; margin-bottom:15px;">Learny Popup Ads Report</h2>
+        <p style="color:#666; margin-bottom:15px;">Generated: ${new Date().toLocaleString()} | Total Ads: ${currentAdsData.length}</p>
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#f8f9fa;">
+              <th style="border:1px solid #ddd; padding:8px; text-align:left;">Image</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:left;">Description</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:center;">Type</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:center;">Status</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:center;">Views</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:center;">Clicks</th>
+              <th style="border:1px solid #ddd; padding:8px; text-align:center;">CTR</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      currentAdsData.forEach(ad => {
+        const ctr = ad.views > 0 ? ((ad.clicks / ad.views) * 100).toFixed(2) + '%' : '0%';
+        tableHtml += `
+          <tr>
+            <td style="border:1px solid #ddd; padding:6px;"><img src="${ad.imageUrl}" width="60" height="45" style="object-fit:cover;border-radius:4px;" onerror="this.style.background='#eee'"></td>
+            <td style="border:1px solid #ddd; padding:6px; max-width:200px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(ad.description)}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:center; font-weight:bold;">${ad.adType}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:center; color:${ad.isActive ? '#27ae60' : '#e74c3c'};">${ad.isActive ? 'Active' : 'Paused'}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:center;">${ad.views || 0}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:center;">${ad.clicks || 0}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:center;">${ctr}</td>
+          </tr>
+        `;
+      });
+      tableHtml += `</tbody></table><p style="margin-top:20px; color:#999; font-size:11px; text-align:center;">Learny Ads Manager | Hexa Solutions</p>`;
+      
+      pdfContainer.innerHTML = tableHtml;
+      const opt = { margin: 10, filename: 'learny_ads_report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
+      html2pdf().set(opt).from(pdfContainer).save();
+    };
+
+    window.exportSinglePDF = () => {
+      const element = document.querySelector('#previewBody .popup-box');
+      if (!element) return;
+      const ad = currentAdsData.find(a => previewBody.innerHTML.includes(a.id));
+      const name = ad ? ad.description.replace(/[^a-zA-Z0-9]/g, '_').substring(0,20) : 'ad';
+      const opt = { margin: 10, filename: `${name}_preview.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' } };
+      html2pdf().set(opt).from(element).save();
     };
 
     // Helpers
-    function escapeHtml(text) { 
-      const div = document.createElement('div'); 
-      div.textContent = text; 
-      return div.innerHTML; 
-    }
-    
-    function shortenUrl(url) { 
-      try { 
-        const u = new URL(url); 
-        return u.hostname + (u.pathname.length > 1 ? u.pathname.substring(0,15) : ''); 
-      } catch { 
-        return url.substring(0, 30); 
-      } 
-    }
+    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+    function shortenUrl(url) { try { const u = new URL(url); return u.hostname + (u.pathname.length > 1 ? u.pathname.substring(0,15) : ''); } catch { return url.substring(0, 30); } }
 
-    // Init
     checkLogin();
   </script>
 </body>
