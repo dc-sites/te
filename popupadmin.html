@@ -1,56 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Popup Ad Manager</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; padding: 20px; margin: 0; }
-    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1, h3 { margin-top: 0; color: #111827; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    label { display: block; font-size: 13px; font-weight: 500; color: #4b5563; margin-bottom: 4px; }
-    input { width: 100%; padding: 9px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-    button { padding: 9px 14px; cursor: pointer; border: none; border-radius: 6px; font-weight: 500; font-size: 14px; }
-    .btn-add { background: #2563eb; color: #fff; width: 100%; }
-    .btn-add:hover { background: #1d4ed8; }
-    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
-    th, td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: middle; }
-    th { background: #f9fafb; font-weight: 600; color: #374151; }
-    img.thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: #eee; }
-    .status { font-weight: 600; }
-    .active { color: #16a34a; }
-    .paused { color: #dc2626; }
-    .actions button { margin-right: 6px; margin-bottom: 4px; }
-    .btn-pause { background: #fef3c7; color: #92400e; }
-    .btn-play { background: #d1fae5; color: #065f46; }
-    .btn-reset { background: #e0e7ff; color: #1e40af; }
-    .btn-del { background: #fee2e2; color: #b91c1c; }
-    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } table { display: block; overflow-x: auto; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      color: #333;
+    }
+    .container { max-width: 900px; margin: auto; }
+    h1 { margin-bottom: 24px; text-align: center; }
+    
+    /* Form */
+    .form-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; }
+    input, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    button:hover { background: #0056b3; }
+    
+    /* Ads List */
+    .ad-item {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .ad-item img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+    .ad-info { flex: 1; }
+    .ad-stats {
+      font-size: 13px;
+      color: #666;
+      margin: 4px 0;
+    }
+    .ad-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 100px;
+    }
+    .btn-pause { background: #ffc107; color: #000; }
+    .btn-resume { background: #28a745; }
+    .btn-delete { background: #dc3545; }
+    
+    @media (max-width: 600px) {
+      .ad-item { flex-direction: column; align-items: flex-start; }
+      .ad-actions { flex-direction: row; width: 100%; }
+      .ad-actions button { flex: 1; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📢 Popup Ad Manager</h1>
-    <div style="background:#f0f7ff; padding:16px; border-radius:8px; margin-bottom:20px;">
-      <h3>Add New Ad</h3>
-      <div class="form-grid">
-        <div><label>Image URL</label><input type="text" id="imgUrl" placeholder="https://example.com/ad.jpg"></div>
-        <div><label>Description</label><input type="text" id="desc" placeholder="Short promotional text"></div>
-        <div><label>Button Text</label><input type="text" id="btnText" value="Learn More"></div>
-        <div><label>Button URL</label><input type="text" id="btnUrl" placeholder="https://example.com"></div>
+    <h1>🎯 Popup Ad Manager</h1>
+    
+    <!-- Add New Ad Form -->
+    <div class="form-card">
+      <h3 style="margin-bottom:16px;">Add New Ad</h3>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="url" id="imageUrl" placeholder="https://example.com/ad.jpg" required>
       </div>
-      <button class="btn-add" onclick="addAd()">➕ Add Ad</button>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" rows="2" placeholder="Short ad description..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Button Text</label>
+        <input type="text" id="buttonText" placeholder="Learn More" required>
+      </div>
+      <div class="form-group">
+        <label>Button URL</label>
+        <input type="url" id="buttonUrl" placeholder="https://yoursite.com" required>
+      </div>
+      <button id="addAdBtn">➕ Add Ad</button>
     </div>
-    <h3>Ad Management</h3>
-    <table>
-      <thead><tr><th>Preview</th><th>Description</th><th>Views</th><th>Clicks</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="adsBody"><tr><td colspan="6" style="text-align:center;color:#666;">Loading...</td></tr></tbody>
-    </table>
+
+    <!-- Ads List -->
+    <div id="adsList"></div>
   </div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAUlaYW7amE3tl7klCZ0WbVUfmTgOn0NSM",
@@ -65,72 +132,98 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.addAd = async () => {
-      const imgUrl = document.getElementById('imgUrl').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      const btnText = document.getElementById('btnText').value.trim();
-      const btnUrl = document.getElementById('btnUrl').value.trim();
-      if(!imgUrl || !btnUrl) return alert('Image & Button URLs are required');
+    // Add New Ad
+    document.getElementById('addAdBtn').addEventListener('click', async () => {
+      const imageUrl = document.getElementById('imageUrl').value;
+      const description = document.getElementById('description').value;
+      const buttonText = document.getElementById('buttonText').value;
+      const buttonUrl = document.getElementById('buttonUrl').value;
 
-      await addDoc(collection(db, 'popup_ads'), {
-        imageUrl: imgUrl,
-        description: desc,
-        buttonText: btnText,
-        buttonUrl: btnUrl,
-        isActive: true,
-        views: 0,
-        clicks: 0,
-        resetToken: Date.now().toString(),
-        createdAt: new Date()
-      });
-      document.getElementById('imgUrl').value = '';
-      document.getElementById('desc').value = '';
-      loadAds();
-    };
-
-    window.toggleStatus = async (id, current) => {
-      const newStatus = !current;
-      const updates = { isActive: newStatus };
-      // Reset token when re-activating so all users see it again
-      if (newStatus) updates.resetToken = Date.now().toString();
-      await updateDoc(doc(db, 'popup_ads', id), updates);
-      loadAds();
-    };
-
-    window.deleteAd = async (id) => {
-      if(confirm('Permanently delete this ad?')) {
-        await deleteDoc(doc(db, 'popup_ads', id));
-        loadAds();
-      }
-    };
-
-    async function loadAds() {
-      const q = query(collection(db, 'popup_ads'), orderBy('createdAt', 'desc'));
-      const snap = await getDocs(q);
-      const tbody = document.getElementById('adsBody');
-      tbody.innerHTML = '';
-      
-      if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#666;">No ads found</td></tr>';
+      if (!imageUrl || !description || !buttonText || !buttonUrl) {
+        alert('Please fill all fields');
         return;
       }
+
+      await addDoc(collection(db, 'ads'), {
+        imageUrl,
+        description,
+        buttonText,
+        buttonUrl,
+        views: 0,
+        clicks: 0,
+        paused: false,
+        createdAt: new Date().toISOString()
+      });
+
+      // Reset form & reload
+      document.getElementById('imageUrl').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('buttonText').value = '';
+      document.getElementById('buttonUrl').value = '';
+      loadAds();
+    });
+
+    // Load & Render Ads
+    async function loadAds() {
+      const list = document.getElementById('adsList');
+      list.innerHTML = '<p style="text-align:center;color:#666;">Loading ads...</p>';
       
-      snap.forEach(d => {
-        const ad = {id: d.id, ...d.data()};
-        tbody.innerHTML += `
-          <tr>
-            <td><img src="${ad.imageUrl}" class="thumb" onerror="this.style.display='none'"></td>
-            <td>${ad.description || '-'}<br><small style="color:#666">${ad.buttonText || 'Button'}</small></td>
-            <td>${ad.views || 0}</td>
-            <td>${ad.clicks || 0}</td>
-            <td class="status ${ad.isActive ? 'active' : 'paused'}">${ad.isActive ? '● Active' : '● Paused'}</td>
-            <td class="actions">
-              <button class="${ad.isActive ? 'btn-pause' : 'btn-play'}" onclick="toggleStatus('${ad.id}', ${ad.isActive})">${ad.isActive ? '⏸ Pause' : '▶ Play'}</button>
-              <button class="btn-del" onclick="deleteAd('${ad.id}')">🗑 Delete</button>
-            </td>
-          </tr>`;
+      const snapshot = await getDocs(collection(db, 'ads'));
+      list.innerHTML = '';
+      
+      if (snapshot.empty) {
+        list.innerHTML = '<p style="text-align:center;color:#999;">No ads created yet.</p>';
+        return;
+      }
+
+      snapshot.forEach(docSnap => {
+        const ad = { id: docSnap.id, ...docSnap.data() };
+        const item = document.createElement('div');
+        item.className = 'ad-item';
+        item.innerHTML = `
+          <img src="${ad.imageUrl}" alt="Ad" onerror="this.src='https://via.placeholder.com/80x60?text=No+Image'">
+          <div class="ad-info">
+            <strong>${ad.buttonText}</strong>
+            <p style="font-size:14px;color:#555;margin:4px 0 8px;">${ad.description}</p>
+            <div class="ad-stats">
+              👁️ Views: <strong>${ad.views || 0}</strong> | 
+              🖱️ Clicks: <strong>${ad.clicks || 0}</strong><br>
+              Status: <strong style="color:${ad.paused ? '#dc3545' : '#28a745'}">
+                ${ad.paused ? '⏸️ Paused' : '✅ Active'}
+              </strong>
+            </div>
+          </div>
+          <div class="ad-actions">
+            <button class="${ad.paused ? 'btn-resume' : 'btn-pause'}" data-id="${ad.id}" data-paused="${ad.paused}">
+              ${ad.paused ? '▶️ Resume' : '⏸️ Pause'}
+            </button>
+            <button class="btn-delete" data-id="${ad.id}">🗑️ Delete</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      // Attach event listeners
+      document.querySelectorAll('.btn-pause, .btn-resume').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.dataset.id;
+          const paused = e.target.dataset.paused === 'true';
+          await updateDoc(doc(db, 'ads', id), { paused: !paused });
+          loadAds();
+        });
+      });
+
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm('Delete this ad permanently?')) {
+            await deleteDoc(doc(db, 'ads', e.target.dataset.id));
+            loadAds();
+          }
+        });
       });
     }
+
+    // Initial load
     loadAds();
   </script>
 </body>
