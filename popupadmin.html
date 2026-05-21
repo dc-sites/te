@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PopupAds Admin - Learny</title>
+  <title>Popup Ads Admin - Learny</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -93,7 +93,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Popup Ads Manager</h1>
+    <h1>🎯 Popup Ads Manager</h1>
     
     <!-- Error Display -->
     <div id="errorMsg" class="error-msg"></div>
@@ -125,7 +125,7 @@
     <div id="adsList">Loading ads...</div>
   </div>
 
-   <script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -143,6 +143,7 @@
     const db = getFirestore(app);
     const adsCollection = collection(db, "ads");
 
+    // Show error message
     function showError(msg) {
       const el = document.getElementById('errorMsg');
       el.textContent = '❌ ' + msg;
@@ -150,6 +151,7 @@
       setTimeout(() => el.classList.remove('show'), 5000);
     }
 
+    // Add New Ad
     document.getElementById('addAd').addEventListener('click', async () => {
       const btn = document.getElementById('addAd');
       const imageUrl = document.getElementById('imageUrl').value.trim();
@@ -157,40 +159,61 @@
       const buttonText = document.getElementById('buttonText').value.trim();
       const buttonUrl = document.getElementById('buttonUrl').value.trim();
 
-      if (!imageUrl || !description || !buttonText) { showError('Please fill all required fields (*)'); return; }
+      if (!imageUrl || !description || !buttonText) {
+        showError('Please fill all required fields (*)');
+        return;
+      }
 
-      btn.disabled = true; btn.textContent = 'Publishing...';
+      btn.disabled = true;
+      btn.textContent = 'Publishing...';
+
       try {
         await addDoc(adsCollection, {
-          imageUrl, description, buttonText, buttonUrl: buttonUrl || '',
-          isActive: true, views: 0, clicks: 0,
-          createdAt: new Date(),
-          lastActivatedAt: Date.now() // 🆕 Track activation time
+          imageUrl,
+          description,
+          buttonText,
+          buttonUrl: buttonUrl || '',
+          isActive: true,
+          views: 0,
+          clicks: 0,
+          createdAt: new Date()
         });
         alert('✅ Ad published successfully!');
+        // Reset form
         document.getElementById('imageUrl').value = '';
         document.getElementById('description').value = '';
         document.getElementById('buttonText').value = '';
         document.getElementById('buttonUrl').value = '';
         loadAds();
       } catch (error) {
-        showError(error.message || 'Failed to publish ad.');
-      } finally { btn.disabled = false; btn.textContent = 'Publish Ad'; }
+        console.error('Error adding ad:', error);
+        showError(error.message || 'Failed to publish ad. Check Firestore rules & console.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Publish Ad';
+      }
     });
 
+    // Load & Display Ads
     async function loadAds() {
       const list = document.getElementById('adsList');
       list.innerHTML = 'Loading...';
+      
       try {
         const q = query(adsCollection, orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
-        if (snapshot.empty) { list.innerHTML = '<div class="empty">No ads created yet.</div>'; return; }
+        
+        if (snapshot.empty) {
+          list.innerHTML = '<div class="empty">No ads created yet.</div>';
+          return;
+        }
 
         let html = '';
         snapshot.forEach(docSnap => {
           const ad = { id: docSnap.id, ...docSnap.data() };
           const statusClass = ad.isActive ? 'status-active' : 'status-paused';
           const statusText = ad.isActive ? '● Active' : '● Paused';
+          
           html += `
             <div class="ad-card">
               <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/80x60?text=Ad'">
@@ -209,27 +232,35 @@
           `;
         });
         list.innerHTML = html;
+        
       } catch (error) {
+        console.error('Error loading ads:', error);
         list.innerHTML = `<div class="empty" style="color:#c62828;">Error: ${error.message}</div>`;
       }
     }
 
-    // 🆕 Play updates timestamp → resets user localStorage tracking
+    // Toggle Ad Status (Pause/Play)
     window.toggleAd = async (id, newStatus) => {
       try {
-        const updateData = { isActive: newStatus };
-        if (newStatus) updateData.lastActivatedAt = Date.now(); // Timestamp reset
-        await updateDoc(doc(db, "ads", id), updateData);
+        await updateDoc(doc(db, "ads", id), { isActive: newStatus });
         loadAds();
-      } catch (error) { showError('Failed to update: ' + error.message); }
+      } catch (error) {
+        showError('Failed to update: ' + error.message);
+      }
     };
 
+    // Delete Ad
     window.deleteAd = async (id) => {
       if (!confirm('Delete this ad permanently?')) return;
-      try { await deleteDoc(doc(db, "ads", id)); loadAds(); }
-      catch (error) { showError('Failed to delete: ' + error.message); }
+      try {
+        await deleteDoc(doc(db, "ads", id));
+        loadAds();
+      } catch (error) {
+        showError('Failed to delete: ' + error.message);
+      }
     };
 
+    // Initial load
     loadAds();
   </script>
 </body>
