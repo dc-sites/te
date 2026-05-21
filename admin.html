@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ad Manager Pro</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f9fafb; margin: 0; padding: 20px; color: #1f2937; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card h2 { margin: 0 0 16px; font-size: 18px; color: #111827; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 13px; font-weight: 500; color: #4b5563; }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+    .form-group textarea { min-height: 60px; resize: vertical; }
+    .btn { padding: 10px 20px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #2563eb; }
+    .btn-danger { background: #ef4444; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-box { background: #f9fafb; padding: 12px; border-radius: 8px; text-align: center; }
+    .stat-value { font-size: 20px; font-weight: 700; color: #111827; }
+    .stat-label { font-size: 12px; color: #6b7280; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+    th { background: #f9fafb; font-weight: 600; color: #374151; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-inactive { background: #fee2e2; color: #991b1b; }
+    .actions { display: flex; gap: 6px; }
+    .empty-row td { text-align: center; padding: 24px; color: #9ca3af; }
+    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } th, td { padding: 8px; font-size: 13px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ad Manager Pro</h1>
+    
+    <!-- Date Display -->
+    <div class="card">
+      <strong>Today:</strong> <span id="today-date">Loading...</span> <span id="sl-time"></span>
+    </div>
+
+    <!-- Create Ad Form -->
+    <div class="card">
+      <h2>Create New Advertisement</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Ad Type</label>
+          <select id="ad-type">
+            <option value="banner">Banner Ad (Auto-Slide)</option>
+            <option value="anchor">Anchor Ad (Fixed Bottom)</option>
+            <option value="popup">Popup Ad (10s Modal)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="image-url" placeholder="https://example.com/image.png" required>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Description</label>
+          <textarea id="ad-desc" placeholder="Enter ad description..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Button Text</label>
+          <input type="text" id="btn-text" placeholder="Learn More">
+        </div>
+        <div class="form-group">
+          <label>Button URL</label>
+          <input type="url" id="btn-url" placeholder="https://example.com">
+        </div>
+      </div>
+      <button class="btn" onclick="publishAd()">Publish Advertisement</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Ads</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-active">0</div><div class="stat-label">Active Ads</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-views">0</div><div class="stat-label">Today's Views</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-clicks">0</div><div class="stat-label">Today's Clicks</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-ctr">0%</div><div class="stat-label">Avg CTR</div></div>
+      </div>
+    </div>
+
+    <!-- Ads Table -->
+    <div class="card">
+      <h2>All Advertisements</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th><th>Image</th><th>Description</th><th>Total Views</th><th>Total Clicks</th><th>CTR</th><th>Today</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ads-table-body">
+          <tr class="empty-row"><td colspan="9">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Export -->
+    <div class="card">
+      <button class="btn" onclick="exportReports()">Export Reports</button>
+      <button class="btn btn-sm" style="margin-left:8px;" onclick="exportAllAds()">Export All Ads</button>
+    </div>
+
+    <!-- Premium Offers Section -->
+    <div class="card">
+      <h2>Create Premium Offer</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Offer Title</label>
+          <input type="text" id="offer-title" placeholder="Premium Upgrade">
+        </div>
+        <div class="form-group">
+          <label>Offer Price</label>
+          <input type="text" id="offer-price" placeholder="Rs. 999/month">
+        </div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" id="offer-end">
+        </div>
+        <div class="form-group">
+          <label>Button URL</label>
+          <input type="url" id="offer-url" placeholder="https://example.com/premium">
+        </div>
+      </div>
+      <button class="btn" onclick="publishOffer()">Publish Offer</button>
+    </div>
+
+    <!-- Offers Table -->
+    <div class="card">
+      <h2>Premium Offers</h2>
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Price</th><th>End Date</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="offers-table-body">
+          <tr class="empty-row"><td colspan="5">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Config (same as ads.js)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuafsG2a7I5WRTcwvP2CgNv452L4BzHls",
+      authDomain: "learny-ec06f.firebaseapp.com",
+      projectId: "learny-ec06f",
+      storageBucket: "learny-ec06f.firebasestorage.app",
+      messagingSenderId: "65568577957",
+      appId: "1:65568577957:web:ef9f6dae41aeec20d7b04c",
+      measurementId: "G-MSYGVV8LBJ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function getTodaySL() {
+      const now = new Date();
+      return new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Colombo' })).toISOString().split('T')[0];
+    }
+    const today = getTodaySL();
+    document.getElementById('today-date').textContent = today;
+    document.getElementById('sl-time').textContent = `(SL Time)`;
+
+    function fixUrl(url) {
+      if (!url) return '#';
+      url = url.trim();
+      return url.startsWith('http://') || url.startsWith('https://') ? url : 'https://' + url;
+    }
+
+    // Publish Ad (supports banner, anchor, popup)
+    async function publishAd() {
+      const type = document.getElementById('ad-type').value;
+      const imageUrl = document.getElementById('image-url').value;
+      const description = document.getElementById('ad-desc').value;
+      const buttonText = document.getElementById('btn-text').value || 'Learn More';
+      const buttonUrl = document.getElementById('btn-url').value;
+
+      if (!imageUrl || !description) {
+        alert('Image URL and Description are required');
+        return;
+      }
+
+      try {
+        await db.collection('ads').add({
+          type,
+          imageUrl: fixUrl(imageUrl),
+          description,
+          buttonText,
+          buttonUrl: fixUrl(buttonUrl),
+          active: true,
+          totalViews: 0,
+          totalClicks: 0,
+          dailyStats: { [today]: { views: 0, clicks: 0 } },
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert('✅ Ad published successfully!');
+        // Reset form
+        document.getElementById('image-url').value = '';
+        document.getElementById('ad-desc').value = '';
+        document.getElementById('btn-text').value = '';
+        document.getElementById('btn-url').value = '';
+      } catch (err) {
+        console.error('Error publishing ad:', err);
+        alert('❌ Error: ' + err.message);
+      }
+    }
+
+    // Publish Offer
+    async function publishOffer() {
+      const title = document.getElementById('offer-title').value;
+      const price = document.getElementById('offer-price').value;
+      const endDate = document.getElementById('offer-end').value;
+      const buttonUrl = document.getElementById('offer-url').value;
+
+      if (!title || !price || !endDate) {
+        alert('All offer fields are required');
+        return;
+      }
+
+      try {
+        await db.collection('offers').add({
+          title,
+          price,
+          endDate,
+          buttonUrl: fixUrl(buttonUrl),
+          description: 'Unlock all features, remove ads, and get priority support!',
+          active: true,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert('✅ Offer published!');
+        document.getElementById('offer-title').value = '';
+        document.getElementById('offer-price').value = '';
+        document.getElementById('offer-end').value = '';
+        document.getElementById('offer-url').value = '';
+      } catch (err) {
+        console.error('Error publishing offer:', err);
+        alert('❌ Error: ' + err.message);
+      }
+    }
+
+    // Toggle Ad Active Status
+    async function toggleAdStatus(id, current) {
+      try {
+        await db.collection('ads').doc(id).update({ active: !current });
+      } catch (err) { console.error(err); }
+    }
+
+    // Delete Ad
+    async function deleteAd(id) {
+      if (!confirm('Delete this ad?')) return;
+      try {
+        await db.collection('ads').doc(id).delete();
+      } catch (err) { console.error(err); }
+    }
+
+    // Delete Offer
+    async function deleteOffer(id) {
+      if (!confirm('Delete this offer?')) return;
+      try {
+        await db.collection('offers').doc(id).delete();
+      } catch (err) { console.error(err); }
+    }
+
+    // Render Ads Table
+    function renderAdsTable(snapshot) {
+      const tbody = document.getElementById('ads-table-body');
+      let total = 0, active = 0, totalViews = 0, totalClicks = 0, todayViews = 0, todayClicks = 0;
+
+      if (snapshot.empty) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No ads found</td></tr>';
+        updateStats(0,0,0,0);
+        return;
+      }
+
+      let rows = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        total++;
+        if (data.active) active++;
+        const views = data.totalViews || 0;
+        const clicks = data.totalClicks || 0;
+        const daily = data.dailyStats?.[today] || {};
+        const dViews = daily.views || 0;
+        const dClicks = daily.clicks || 0;
+        totalViews += views;
+        totalClicks += clicks;
+        todayViews += dViews;
+        todayClicks += dClicks;
+        const ctr = views > 0 ? ((clicks/views)*100).toFixed(1) + '%' : '0%';
+        const typeBadge = data.type === 'popup' ? '🪟 Popup' : data.type === 'anchor' ? '📌 Anchor' : '🎠 Banner';
+        rows += `
+          <tr>
+            <td><span class="status-badge" style="background:#dbeafe;color:#1e40af">${typeBadge}</span></td>
+            <td><img src="${data.imageUrl}" style="width:40px;height:40px;object-fit:contain;border-radius:4px;"></td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${data.description}</td>
+            <td>${views}</td>
+            <td>${clicks}</td>
+            <td>${ctr}</td>
+            <td>${dViews}v / ${dClicks}c</td>
+            <td><span class="status-badge ${data.active ? 'status-active' : 'status-inactive'}">${data.active ? 'Active' : 'Inactive'}</span></td>
+            <td class="actions">
+              <button class="btn btn-sm" onclick="toggleAdStatus('${doc.id}', ${data.active})">${data.active ? 'Pause' : 'Activate'}</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteAd('${doc.id}')">Delete</button>
+            </td>
+          </tr>`;
+      });
+      tbody.innerHTML = rows;
+      updateStats(total, active, todayViews, todayClicks);
+    }
+
+    // Render Offers Table
+    function renderOffersTable(snapshot) {
+      const tbody = document.getElementById('offers-table-body');
+      if (snapshot.empty) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No offers found</td></tr>';
+        return;
+      }
+      let rows = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const status = new Date(data.endDate) >= new Date() ? 'Active' : 'Expired';
+        rows += `
+          <tr>
+            <td>${data.title}</td>
+            <td>${data.price}</td>
+            <td>${data.endDate}</td>
+            <td><span class="status-badge ${status === 'Active' ? 'status-active' : 'status-inactive'}">${status}</span></td>
+            <td class="actions">
+              <button class="btn btn-sm btn-danger" onclick="deleteOffer('${doc.id}')">Delete</button>
+            </td>
+          </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    // Update Stats Display
+    function updateStats(total, active, views, clicks) {
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-active').textContent = active;
+      document.getElementById('stat-views').textContent = views;
+      document.getElementById('stat-clicks').textContent = clicks;
+      const ctr = views > 0 ? ((clicks/views)*100).toFixed(1) + '%' : '0%';
+      document.getElementById('stat-ctr').textContent = ctr;
+    }
+
+    // Export Functions (placeholders)
+    function exportReports() { alert('📊 PDF export feature coming soon!'); }
+    function exportAllAds() { alert('📥 CSV export feature coming soon!'); }
+
+    // Load Data on Init
+    document.addEventListener('DOMContentLoaded', () => {
+      db.collection('ads').orderBy('createdAt', 'desc').onSnapshot(renderAdsTable);
+      db.collection('offers').orderBy('createdAt', 'desc').onSnapshot(renderOffersTable);
+    });
+  </script>
+</body>
+</html>
