@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Popup Ads Admin - Learny</title>
+  <title>PopupAds Admin - Learny</title>
   <link rel="icon" href="https://i.postimg.cc/FRT2BG9K/Postwizz-21052026-170450340.jpg" type="image/png">
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -234,7 +234,8 @@
         </div>
         <div class="form-group">
           <label><i class="fa-solid fa-link"></i> Button URL (optional)</label>
-          <input type="url" id="buttonUrl" placeholder="https://yoursite.com">
+          <input type="url" id="buttonUrl" placeholder="https://yoursite.com or t.me/yourbot">
+          <small style="color:var(--text-muted); font-size:12px; display:block; margin-top:4px;">💡 Tip: Enter <code>t.me/yourbot</code> — it will auto-convert to <code>https://t.me/yourbot</code></small>
         </div>
         <button class="btn btn-success" id="addAd">
           <i class="fa-solid fa-paper-plane"></i> Publish Ad
@@ -309,6 +310,18 @@
       normal: "<i class='fa-solid fa-lock'></i> <strong>Normal Ad:</strong> Shows once per user. Won't reappear until you pause &amp; play it again in this panel. Perfect for promotions.",
       skippable: "<i class='fa-solid fa-forward-fast'></i> <strong>Skippable Ad:</strong> Shows on every page reload. Users can skip after 3 seconds or click the CTA button. Great for high-frequency campaigns."
     };
+
+    // ===== URL NORMALIZER (FIX FOR RELATIVE URLS) =====
+    function normalizeUrl(url) {
+      if (!url) return '';
+      url = url.trim();
+      // If already has protocol or is protocol-relative, return as-is
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//')) {
+        return url;
+      }
+      // Auto-prepend https:// for short links like t.me/..., wa.me/..., etc.
+      return 'https://' + url;
+    }
 
     // ===== AUTH FUNCTIONS =====
     function checkLogin() {
@@ -393,7 +406,8 @@
       try {
         await addDoc(adsCollection, {
           adType, imageUrl, description, buttonText,
-          buttonUrl: buttonUrl || '', isActive: true,
+          buttonUrl: buttonUrl ? normalizeUrl(buttonUrl) : '', // ✅ NORMALIZE URL HERE
+          isActive: true,
           views: 0, clicks: 0,
           createdAt: new Date().toISOString(),
           lastActivatedAt: Date.now()
