@@ -75,6 +75,16 @@
     .status-active { background: #d4edda; color: #155724; }
     .status-paused { background: #fff3cd; color: #856404; }
     .empty { text-align: center; color: #888; padding: 30px; }
+    .error-msg {
+      background: #ffebee;
+      color: #c62828;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
     @media (max-width: 600px) {
       .ad-card { flex-direction: column; }
       .ad-card img { width: 100%; height: 120px; }
@@ -83,7 +93,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎯 Popup Ads Manager</h1>
+    <h1>Popup Ads Manager</h1>
+    
+    <!-- Error Display -->
+    <div id="errorMsg" class="error-msg"></div>
     
     <!-- Add New Ad Form -->
     <div style="background:#f8f9ff; padding:16px; border-radius:12px; margin-bottom:24px;">
@@ -130,17 +143,29 @@
     const db = getFirestore(app);
     const adsCollection = collection(db, "ads");
 
+    // Show error message
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = '❌ ' + msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
     // Add New Ad
     document.getElementById('addAd').addEventListener('click', async () => {
+      const btn = document.getElementById('addAd');
       const imageUrl = document.getElementById('imageUrl').value.trim();
       const description = document.getElementById('description').value.trim();
       const buttonText = document.getElementById('buttonText').value.trim();
       const buttonUrl = document.getElementById('buttonUrl').value.trim();
 
       if (!imageUrl || !description || !buttonText) {
-        alert('Please fill all required fields (*)');
+        showError('Please fill all required fields (*)');
         return;
       }
+
+      btn.disabled = true;
+      btn.textContent = 'Publishing...';
 
       try {
         await addDoc(adsCollection, {
@@ -162,7 +187,10 @@
         loadAds();
       } catch (error) {
         console.error('Error adding ad:', error);
-        alert('❌ Failed to publish ad');
+        showError(error.message || 'Failed to publish ad. Check Firestore rules & console.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Publish Ad';
       }
     });
 
@@ -207,7 +235,7 @@
         
       } catch (error) {
         console.error('Error loading ads:', error);
-        list.innerHTML = '<div class="empty" style="color:#e74c3c;">Error loading ads</div>';
+        list.innerHTML = `<div class="empty" style="color:#c62828;">Error: ${error.message}</div>`;
       }
     }
 
@@ -217,7 +245,7 @@
         await updateDoc(doc(db, "ads", id), { isActive: newStatus });
         loadAds();
       } catch (error) {
-        alert('Failed to update ad status');
+        showError('Failed to update: ' + error.message);
       }
     };
 
@@ -228,7 +256,7 @@
         await deleteDoc(doc(db, "ads", id));
         loadAds();
       } catch (error) {
-        alert('Failed to delete ad');
+        showError('Failed to delete: ' + error.message);
       }
     };
 
