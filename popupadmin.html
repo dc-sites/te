@@ -4,74 +4,472 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Popup Ads Admin - Learny</title>
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
   <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5568d3;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --text: #333;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --bg-light: #f8f9fa;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: all 0.2s ease;
+    }
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8f9fa; color: #333; line-height: 1.5; }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-light);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
     
     /* ===== LOGIN SCREEN ===== */
-    #login-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-    .login-box { background: #fff; border-radius: 20px; padding: 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.4s ease; }
-    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .login-logo { text-align: center; margin-bottom: 24px; }
-    .login-logo h2 { color: #667eea; font-size: 24px; font-weight: 700; }
-    .login-logo p { color: #666; font-size: 14px; margin-top: 4px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; color: #444; }
-    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: border-color 0.2s; background: #fff; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; }
-    .login-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
-    .login-btn:hover { opacity: 0.95; }
-    .login-btn:active { transform: scale(0.98); }
-    .error-msg { background: #ffebee; color: #c62828; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: none; text-align: center; }
+    #login-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+    
+    .login-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.25);
+      animation: slideUp 0.4s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .login-logo i {
+      font-size: 42px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    
+    .login-logo h2 {
+      color: var(--text);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .login-logo p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    
+    .form-group { margin-bottom: 20px; }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text);
+    }
+    
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--text);
+    }
+    
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .login-btn:hover { 
+      opacity: 0.95; 
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+    
+    .login-btn:active { transform: translateY(0); }
+    
+    .error-msg {
+      background: #fff5f5;
+      color: var(--danger);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 13px;
+      display: none;
+      text-align: center;
+      border-left: 4px solid var(--danger);
+    }
+    
     .error-msg.show { display: block; animation: shake 0.3s; }
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    
     /* ===== ADMIN DASHBOARD ===== */
     #admin-panel { display: none; }
-    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
-    .header { background: #fff; border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .header h1 { color: #667eea; font-size: 22px; font-weight: 700; }
-    .logout-btn { padding: 8px 16px; background: #fff; border: 2px solid #e74c3c; color: #e74c3c; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-    .logout-btn:hover { background: #e74c3c; color: white; }
     
-    .card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .card h3 { margin-bottom: 16px; color: #333; font-size: 18px; font-weight: 600; }
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 24px;
+    }
     
-    textarea { min-height: 60px; resize: vertical; width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; }
-    textarea:focus { outline: none; border-color: #667eea; }
+    .header {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
     
-    .btn { padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; margin-right: 8px; transition: opacity 0.2s; }
-    .btn:hover { opacity: 0.95; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-danger { background: #e74c3c; }
-    .btn-warning { background: #f39c12; }
-    .btn-success { background: #27ae60; }
+    .header h1 {
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
     
-    .ad-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start; transition: box-shadow 0.2s; }
-    .ad-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-    .ad-card img { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; background: #f0f0f0; flex-shrink: 0; }
+    .header h1 i { color: var(--primary); }
+    
+    .logout-btn {
+      padding: 10px 20px;
+      background: var(--white);
+      border: 2px solid var(--danger);
+      color: var(--danger);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .logout-btn:hover {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .card h3 {
+      margin-bottom: 20px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .card h3 i { color: var(--primary); }
+    
+    textarea { 
+      min-height: 70px; 
+      resize: vertical; 
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn {
+      padding: 10px 22px;
+      background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn:hover { 
+      opacity: 0.95; 
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { box-shadow: 0 4px 14px rgba(231, 76, 60, 0.3); }
+    
+    .btn-warning { background: var(--warning); }
+    .btn-warning:hover { box-shadow: 0 4px 14px rgba(243, 156, 18, 0.3); }
+    
+    .btn-success { background: var(--success); }
+    .btn-success:hover { box-shadow: 0 4px 14px rgba(39, 174, 96, 0.3); }
+    
+    .ad-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: var(--transition);
+    }
+    
+    .ad-card:hover { 
+      box-shadow: var(--shadow-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    
+    .ad-card img {
+      width: 90px;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: var(--bg-light);
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    
     .ad-info { flex: 1; min-width: 0; }
-    .ad-title { font-weight: 600; margin-bottom: 4px; font-size: 14px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ad-desc { font-size: 12px; color: #666; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .ad-stats { font-size: 11px; color: #888; margin: 4px 0; display: flex; gap: 12px; flex-wrap: wrap; }
-    .ad-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .status-active { background: #d4edda; color: #155724; }
-    .status-paused { background: #fff3cd; color: #856404; }
-    .type-badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; margin-left: 6px; }
-    .type-normal { background: #e3f2fd; color: #1976d2; }
-    .type-skippable { background: #fff3e0; color: #ef6c00; }
-    .empty { text-align: center; color: #888; padding: 40px 20px; font-size: 14px; }
     
-    .type-info { font-size: 12px; color: #666; background: #f8f9ff; padding: 10px 14px; border-radius: 8px; margin-top: 8px; display: none; }
+    .ad-title { 
+      font-weight: 600; 
+      margin-bottom: 6px; 
+      font-size: 14px; 
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .ad-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    
+    .ad-stats { 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      margin: 6px 0;
+      display: flex; 
+      gap: 16px; 
+      flex-wrap: wrap;
+    }
+    
+    .ad-stats span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .ad-actions { 
+      display: flex; 
+      gap: 8px; 
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .status-active { 
+      background: #dcfce7; 
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    
+    .status-paused { 
+      background: #fef3c7; 
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+    
+    .type-badge { 
+      padding: 4px 10px; 
+      border-radius: 6px; 
+      font-size: 10px; 
+      font-weight: 600; 
+      margin-left: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .type-normal { 
+      background: #dbeafe; 
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+    
+    .type-skippable { 
+      background: #ffedd5; 
+      color: #c2410c;
+      border: 1px solid #fdba74;
+    }
+    
+    .empty { 
+      text-align: center; 
+      color: var(--text-muted); 
+      padding: 48px 24px;
+      font-size: 14px;
+      background: var(--bg-light);
+      border-radius: var(--radius-sm);
+      border: 2px dashed var(--border);
+    }
+    
+    .empty i {
+      font-size: 32px;
+      color: #ccc;
+      margin-bottom: 12px;
+      display: block;
+    }
+    
+    .type-info { 
+      font-size: 13px; 
+      color: var(--text-muted); 
+      background: #f0f4ff; 
+      padding: 12px 16px; 
+      border-radius: var(--radius-sm); 
+      margin-top: 10px; 
+      display: none;
+      border-left: 3px solid var(--primary);
+      line-height: 1.5;
+    }
+    
     .type-info.show { display: block; }
+    .type-info strong { color: var(--text); }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .header { flex-direction: column; gap: 16px; text-align: center; }
+      .container { padding: 16px; }
+      .card { padding: 22px; }
+    }
     
     @media (max-width: 600px) {
       .ad-card { flex-direction: column; }
-      .ad-card img { width: 100%; height: 140px; }
-      .header { flex-direction: column; gap: 12px; text-align: center; }
-      .container { padding: 16px; }
+      .ad-card img { width: 100%; height: 150px; }
+      .login-box { padding: 32px 24px; }
+      .btn { width: 100%; justify-content: center; margin-right: 0; margin-bottom: 8px; }
+      .ad-actions { flex-direction: column; }
     }
+    
+    /* ===== UTILITIES ===== */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+    
+    .text-center { text-align: center; }
+    .mt-0 { margin-top: 0; }
+    .mb-0 { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -80,15 +478,18 @@
   <div id="login-screen">
     <div class="login-box">
       <div class="login-logo">
-        <h2>🎯 Learny Ads Admin</h2>
+        <i class="fa-solid fa-shield-halved"></i>
+        <h2>Learny Ads Admin</h2>
         <p>Secure access required</p>
       </div>
       <div id="loginError" class="error-msg"></div>
       <div class="form-group">
-        <label for="adminPass">Password</label>
+        <label for="adminPass"><i class="fa-solid fa-lock"></i> Password</label>
         <input type="password" id="adminPass" placeholder="Enter admin password" autocomplete="current-password">
       </div>
-      <button class="login-btn" id="loginBtn">Sign In</button>
+      <button class="login-btn" id="loginBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
     </div>
   </div>
 
@@ -97,47 +498,51 @@
     <div class="container">
       <!-- Header -->
       <div class="header">
-        <h1>🎯 Popup Ads Manager</h1>
-        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        <h1><i class="fa-solid fa-bullhorn"></i> Popup Ads Manager</h1>
+        <button class="logout-btn" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
       </div>
 
       <!-- Add New Ad Form -->
       <div class="card">
-        <h3>➕ Add New Ad</h3>
+        <h3><i class="fa-solid fa-circle-plus"></i> Add New Ad</h3>
         <div id="formError" class="error-msg"></div>
         
         <div class="form-group">
-          <label>Ad Type *</label>
+          <label><i class="fa-solid fa-layer-group"></i> Ad Type</label>
           <select id="adType" required>
-            <option value="normal">🔒 Normal (Show once, reactivates on pause/play)</option>
-            <option value="skippable">⏭️ Skippable (Show every reload, skip after 3s)</option>
+            <option value="normal"><i class="fa-solid fa-lock"></i> Normal (Show once, reactivates on pause/play)</option>
+            <option value="skippable"><i class="fa-solid fa-forward-fast"></i> Skippable (Show every reload, skip after 3s)</option>
           </select>
           <div id="typeInfo" class="type-info"></div>
         </div>
         
         <div class="form-group">
-          <label>Image URL *</label>
+          <label><i class="fa-solid fa-image"></i> Image URL *</label>
           <input type="url" id="imageUrl" placeholder="https://example.com/ad.jpg" required>
         </div>
         <div class="form-group">
-          <label>Description *</label>
+          <label><i class="fa-solid fa-align-left"></i> Description *</label>
           <textarea id="description" placeholder="Short, engaging ad description..." required></textarea>
         </div>
         <div class="form-group">
-          <label>Button Text *</label>
+          <label><i class="fa-solid fa-font"></i> Button Text *</label>
           <input type="text" id="buttonText" placeholder="Click Here" required>
         </div>
         <div class="form-group">
-          <label>Button URL (optional)</label>
+          <label><i class="fa-solid fa-link"></i> Button URL (optional)</label>
           <input type="url" id="buttonUrl" placeholder="https://yoursite.com">
         </div>
-        <button class="btn btn-success" id="addAd">✨ Publish Ad</button>
+        <button class="btn btn-success" id="addAd">
+          <i class="fa-solid fa-paper-plane"></i> Publish Ad
+        </button>
       </div>
 
       <!-- Ads List -->
       <div class="card">
-        <h3>📋 All Ads</h3>
-        <div id="adsList"><div class="empty">Loading ads...</div></div>
+        <h3><i class="fa-solid fa-list"></i> All Ads</h3>
+        <div id="adsList"><div class="empty"><i class="fa-solid fa-inbox"></i>No ads created yet. Add your first ad above!</div></div>
       </div>
     </div>
   </div>
@@ -178,8 +583,8 @@
 
     // Type info texts
     const typeDescriptions = {
-      normal: "🔒 <strong>Normal Ad:</strong> Shows once per user. Won't reappear until you pause & play it again in this panel. Perfect for promotions.",
-      skippable: "⏭️ <strong>Skippable Ad:</strong> Shows on every page reload. Users can skip after 3 seconds or click the CTA button. Great for high-frequency campaigns."
+      normal: "<i class='fa-solid fa-lock'></i> <strong>Normal Ad:</strong> Shows once per user. Won't reappear until you pause &amp; play it again in this panel. Perfect for promotions.",
+      skippable: "<i class='fa-solid fa-forward-fast'></i> <strong>Skippable Ad:</strong> Shows on every page reload. Users can skip after 3 seconds or click the CTA button. Great for high-frequency campaigns."
     };
 
     // ===== AUTH FUNCTIONS =====
@@ -212,7 +617,7 @@
     }
 
     function showError(el, msg) {
-      el.textContent = '❌ ' + msg;
+      el.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + msg;
       el.classList.add('show');
     }
     function hideError(el) { el.classList.remove('show'); }
@@ -251,7 +656,9 @@
       hideError(formError);
       if (!imageUrl || !description || !buttonText) { showError(formError, 'Please fill all required fields (*)'); return; }
 
-      btn.disabled = true; btn.textContent = 'Publishing...';
+      btn.disabled = true; 
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+      
       try {
         await addDoc(adsCollection, {
           adType, imageUrl, description, buttonText,
@@ -269,53 +676,68 @@
       } catch (error) {
         console.error('Error adding ad:', error);
         showError(formError, error.message || 'Failed to publish ad.');
-      } finally { btn.disabled = false; btn.textContent = '✨ Publish Ad'; }
+      } finally { 
+        btn.disabled = false; 
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Ad';
+      }
     });
 
     // Load Ads
     async function loadAds() {
       const list = document.getElementById('adsList');
-      list.innerHTML = '<div class="empty">Loading ads...</div>';
+      list.innerHTML = '<div class="empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading ads...</div>';
+      
       try {
         const q = query(adsCollection, orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
-        if (snapshot.empty) { list.innerHTML = '<div class="empty">No ads created yet. Add your first ad above! ✨</div>'; return; }
+        
+        if (snapshot.empty) { 
+          list.innerHTML = '<div class="empty"><i class="fa-solid fa-inbox"></i>No ads created yet. Add your first ad above!</div>'; 
+          return; 
+        }
 
         let html = '';
         snapshot.forEach(docSnap => {
           const ad = { id: docSnap.id, ...docSnap.data() };
           const statusClass = ad.isActive ? 'status-active' : 'status-paused';
-          const statusText = ad.isActive ? '● Active' : '● Paused';
-          const statusEmoji = ad.isActive ? '🟢' : '🟡';
+          const statusText = ad.isActive ? 'Active' : 'Paused';
+          const statusIcon = ad.isActive ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-pause"></i>';
           const typeClass = ad.adType === 'skippable' ? 'type-skippable' : 'type-normal';
-          const typeLabel = ad.adType === 'skippable' ? '⏭️ Skippable' : '🔒 Normal';
+          const typeIcon = ad.adType === 'skippable' ? '<i class="fa-solid fa-forward-fast"></i>' : '<i class="fa-solid fa-lock"></i>';
+          const typeLabel = ad.adType === 'skippable' ? 'Skippable' : 'Normal';
           
           html += `
             <div class="ad-card">
-              <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/80x60/e0e0e0/666?text=Ad'" alt="Ad">
+              <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/90x68/e0e0e0/666?text=Ad'" alt="Ad">
               <div class="ad-info">
-                <div class="ad-title">${escapeHtml(ad.description)} <span class="type-badge ${typeClass}">${typeLabel}</span></div>
+                <div class="ad-title">
+                  ${escapeHtml(ad.description)} 
+                  <span class="type-badge ${typeClass}">${typeIcon} ${typeLabel}</span>
+                </div>
                 <div class="ad-desc">${escapeHtml(ad.buttonText)} → ${ad.buttonUrl ? shortenUrl(ad.buttonUrl) : 'No link'}</div>
                 <div class="ad-stats">
-                  <span>👁 ${ad.views || 0} views</span>
-                  <span>🖱 ${ad.clicks || 0} clicks</span>
-                  <span>📅 ${new Date(ad.createdAt).toLocaleDateString()}</span>
+                  <span><i class="fa-regular fa-eye"></i> ${ad.views || 0} views</span>
+                  <span><i class="fa-regular fa-hand-pointer"></i> ${ad.clicks || 0} clicks</span>
+                  <span><i class="fa-regular fa-calendar"></i> ${new Date(ad.createdAt).toLocaleDateString()}</span>
                 </div>
-                <span class="status-badge ${statusClass}">${statusEmoji} ${statusText}</span>
+                <span class="status-badge ${statusClass}">${statusIcon} ${statusText}</span>
                 <div class="ad-actions">
                   <button class="btn ${ad.isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleAd('${ad.id}', ${!ad.isActive})">
-                    ${ad.isActive ? '⏸ Pause' : '▶ Play'}
+                    ${ad.isActive ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Play'}
                   </button>
-                  <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">🗑 Delete</button>
+                  <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">
+                    <i class="fa-solid fa-trash"></i> Delete
+                  </button>
                 </div>
               </div>
             </div>
           `;
         });
         list.innerHTML = html;
+        
       } catch (error) {
         console.error('Error loading ads:', error);
-        list.innerHTML = `<div class="empty" style="color:#c62828;">Error: ${error.message}</div>`;
+        list.innerHTML = `<div class="empty" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Error: ${error.message}</div>`;
       }
     }
 
@@ -326,19 +748,37 @@
         if (newStatus) updateData.lastActivatedAt = Date.now();
         await updateDoc(doc(db, "ads", id), updateData);
         loadAds();
-      } catch (error) { alert('Failed to update: ' + error.message); }
+      } catch (error) { 
+        alert('Failed to update: ' + error.message); 
+      }
     };
 
     // Delete Ad
     window.deleteAd = async (id) => {
-      if (!confirm('Delete this ad permanently?')) return;
-      try { await deleteDoc(doc(db, "ads", id)); loadAds(); }
-      catch (error) { alert('Failed to delete: ' + error.message); }
+      if (!confirm('Delete this ad permanently? This cannot be undone.')) return;
+      try { 
+        await deleteDoc(doc(db, "ads", id)); 
+        loadAds(); 
+      } catch (error) { 
+        alert('Failed to delete: ' + error.message); 
+      }
     };
 
     // Helpers
-    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-    function shortenUrl(url) { try { const u = new URL(url); return u.hostname + (u.pathname.length > 1 ? u.pathname.substring(0,15) : ''); } catch { return url.substring(0, 30); } }
+    function escapeHtml(text) { 
+      const div = document.createElement('div'); 
+      div.textContent = text; 
+      return div.innerHTML; 
+    }
+    
+    function shortenUrl(url) { 
+      try { 
+        const u = new URL(url); 
+        return u.hostname + (u.pathname.length > 1 ? u.pathname.substring(0,15) : ''); 
+      } catch { 
+        return url.substring(0, 30); 
+      } 
+    }
 
     // Init
     checkLogin();
