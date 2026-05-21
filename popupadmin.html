@@ -7,30 +7,168 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: #f8f9fa;
-      padding: 20px;
       color: #333;
+      line-height: 1.5;
     }
+    
+    /* ===== LOGIN SCREEN ===== */
+    #login-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .login-logo h2 {
+      color: #667eea;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .login-logo p {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #444;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .login-btn:hover { opacity: 0.95; }
+    .login-btn:active { transform: scale(0.98); }
+    .error-msg {
+      background: #ffebee;
+      color: #c62828;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+      text-align: center;
+    }
+    .error-msg.show { display: block; animation: shake 0.3s; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* ===== ADMIN DASHBOARD ===== */
+    #admin-panel { display: none; }
     .container {
       max-width: 900px;
       margin: 0 auto;
+      padding: 24px;
+    }
+    .header {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .header h1 {
+      color: #667eea;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .logout-btn {
+      padding: 8px 16px;
+      background: #fff;
+      border: 2px solid #e74c3c;
+      color: #e74c3c;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .card {
       background: #fff;
       border-radius: 16px;
       padding: 24px;
+      margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-    h1 { margin-bottom: 20px; color: #667eea; }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
-    input, textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
+    .card h3 {
+      margin-bottom: 16px;
+      color: #333;
+      font-size: 18px;
+      font-weight: 600;
     }
-    textarea { min-height: 60px; resize: vertical; }
+    
+    textarea { 
+      min-height: 60px; 
+      resize: vertical; 
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
     .btn {
       padding: 10px 20px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -38,13 +176,17 @@
       border: none;
       border-radius: 8px;
       font-weight: 600;
+      font-size: 14px;
       cursor: pointer;
       margin-right: 8px;
+      transition: opacity 0.2s;
     }
     .btn:hover { opacity: 0.95; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-danger { background: #e74c3c; }
     .btn-warning { background: #f39c12; }
     .btn-success { background: #27ae60; }
+    
     .ad-card {
       background: #fff;
       border: 1px solid #eee;
@@ -54,81 +196,141 @@
       display: flex;
       gap: 12px;
       align-items: flex-start;
+      transition: box-shadow 0.2s;
     }
+    .ad-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
     .ad-card img {
       width: 80px;
       height: 60px;
       object-fit: cover;
       border-radius: 8px;
       background: #f0f0f0;
+      flex-shrink: 0;
     }
-    .ad-info { flex: 1; }
-    .ad-title { font-weight: 600; margin-bottom: 4px; font-size: 14px; }
-    .ad-stats { font-size: 12px; color: #666; margin: 4px 0; }
-    .ad-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ad-info { flex: 1; min-width: 0; }
+    .ad-title { 
+      font-weight: 600; 
+      margin-bottom: 4px; 
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ad-desc {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ad-stats { 
+      font-size: 11px; 
+      color: #888; 
+      margin: 4px 0;
+      display: flex;
+      gap: 12px;
+    }
+    .ad-actions { 
+      display: flex; 
+      gap: 6px; 
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
     .status-badge {
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .status-active { background: #d4edda; color: #155724; }
     .status-paused { background: #fff3cd; color: #856404; }
-    .empty { text-align: center; color: #888; padding: 30px; }
-    .error-msg {
-      background: #ffebee;
-      color: #c62828;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      display: none;
+    .empty { 
+      text-align: center; 
+      color: #888; 
+      padding: 40px 20px;
+      font-size: 14px;
     }
-    .error-msg.show { display: block; }
+    
     @media (max-width: 600px) {
       .ad-card { flex-direction: column; }
-      .ad-card img { width: 100%; height: 120px; }
+      .ad-card img { width: 100%; height: 140px; }
+      .header { flex-direction: column; gap: 12px; text-align: center; }
+      .container { padding: 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎯 Popup Ads Manager</h1>
-    
-    <!-- Error Display -->
-    <div id="errorMsg" class="error-msg"></div>
-    
-    <!-- Add New Ad Form -->
-    <div style="background:#f8f9ff; padding:16px; border-radius:12px; margin-bottom:24px;">
-      <h3 style="margin-bottom:12px;">➕ Add New Ad</h3>
-      <div class="form-group">
-        <label>Image URL *</label>
-        <input type="url" id="imageUrl" placeholder="https://example.com/ad.jpg" required>
-      </div>
-      <div class="form-group">
-        <label>Description *</label>
-        <textarea id="description" placeholder="Short ad description..." required></textarea>
-      </div>
-      <div class="form-group">
-        <label>Button Text *</label>
-        <input type="text" id="buttonText" placeholder="Click Here" required>
-      </div>
-      <div class="form-group">
-        <label>Button URL (optional)</label>
-        <input type="url" id="buttonUrl" placeholder="https://yoursite.com">
-      </div>
-      <button class="btn btn-success" id="addAd">Publish Ad</button>
-    </div>
 
-    <!-- Ads List -->
-    <h3 style="margin-bottom:12px;">📋 Active Ads</h3>
-    <div id="adsList">Loading ads...</div>
+  <!-- 🔐 LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-logo">
+        <h2>🎯 Learny Ads Admin</h2>
+        <p>Secure access required</p>
+      </div>
+      <div id="loginError" class="error-msg"></div>
+      <div class="form-group">
+        <label for="adminPass">Password</label>
+        <input type="password" id="adminPass" placeholder="Enter admin password" autocomplete="current-password">
+      </div>
+      <button class="login-btn" id="loginBtn">Sign In</button>
+    </div>
+  </div>
+
+  <!-- 📊 ADMIN PANEL (hidden until login) -->
+  <div id="admin-panel">
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🎯 Popup Ads Manager</h1>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      </div>
+
+      <!-- Add New Ad Form -->
+      <div class="card">
+        <h3>➕ Add New Ad</h3>
+        <div id="formError" class="error-msg"></div>
+        <div class="form-group">
+          <label>Image URL *</label>
+          <input type="url" id="imageUrl" placeholder="https://example.com/ad.jpg" required>
+        </div>
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="description" placeholder="Short, engaging ad description..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Button Text *</label>
+          <input type="text" id="buttonText" placeholder="Click Here" required>
+        </div>
+        <div class="form-group">
+          <label>Button URL (optional)</label>
+          <input type="url" id="buttonUrl" placeholder="https://yoursite.com">
+        </div>
+        <button class="btn btn-success" id="addAd">✨ Publish Ad</button>
+      </div>
+
+      <!-- Ads List -->
+      <div class="card">
+        <h3>📋 All Ads</h3>
+        <div id="adsList"><div class="empty">Loading ads...</div></div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // ===== CONFIG =====
+    const ADMIN_PASSWORD = "DilaC2007**";
+    const SESSION_KEY = "learny_admin_session";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyAUlaYW7amE3tl7klCZ0WbVUfmTgOn0NSM",
       authDomain: "pop-up-2545a.firebaseapp.com",
@@ -139,19 +341,81 @@
       measurementId: "G-XZS0186BCP"
     };
 
+    // ===== INIT =====
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const adsCollection = collection(db, "ads");
 
-    // Show error message
-    function showError(msg) {
-      const el = document.getElementById('errorMsg');
-      el.textContent = '❌ ' + msg;
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 5000);
+    // DOM Elements
+    const loginScreen = document.getElementById('login-screen');
+    const adminPanel = document.getElementById('admin-panel');
+    const loginError = document.getElementById('loginError');
+    const formError = document.getElementById('formError');
+    const adminPass = document.getElementById('adminPass');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // ===== AUTH FUNCTIONS =====
+    function checkLogin() {
+      const session = localStorage.getItem(SESSION_KEY);
+      if (session === 'authenticated') {
+        loginScreen.style.display = 'none';
+        adminPanel.style.display = 'block';
+        loadAds();
+      }
     }
 
-    // Add New Ad
+    function login(password) {
+      if (password === ADMIN_PASSWORD) {
+        localStorage.setItem(SESSION_KEY, 'authenticated');
+        loginScreen.style.display = 'none';
+        adminPanel.style.display = 'block';
+        loadAds();
+        return true;
+      }
+      return false;
+    }
+
+    function logout() {
+      localStorage.removeItem(SESSION_KEY);
+      adminPanel.style.display = 'none';
+      loginScreen.style.display = 'flex';
+      adminPass.value = '';
+      hideError(loginError);
+    }
+
+    function showError(el, msg) {
+      el.textContent = '❌ ' + msg;
+      el.classList.add('show');
+    }
+    function hideError(el) {
+      el.classList.remove('show');
+    }
+
+    // ===== EVENT LISTENERS =====
+    loginBtn.addEventListener('click', () => {
+      hideError(loginError);
+      const password = adminPass.value.trim();
+      if (!password) {
+        showError(loginError, 'Please enter your password');
+        return;
+      }
+      if (login(password)) {
+        adminPass.value = '';
+      } else {
+        showError(loginError, 'Incorrect password. Please try again.');
+        adminPass.focus();
+        adminPass.select();
+      }
+    });
+
+    adminPass.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') loginBtn.click();
+    });
+
+    logoutBtn.addEventListener('click', logout);
+
+    // ===== AD FUNCTIONS =====
     document.getElementById('addAd').addEventListener('click', async () => {
       const btn = document.getElementById('addAd');
       const imageUrl = document.getElementById('imageUrl').value.trim();
@@ -159,8 +423,9 @@
       const buttonText = document.getElementById('buttonText').value.trim();
       const buttonUrl = document.getElementById('buttonUrl').value.trim();
 
+      hideError(formError);
       if (!imageUrl || !description || !buttonText) {
-        showError('Please fill all required fields (*)');
+        showError(formError, 'Please fill all required fields (*)');
         return;
       }
 
@@ -176,7 +441,8 @@
           isActive: true,
           views: 0,
           clicks: 0,
-          createdAt: new Date()
+          createdAt: new Date().toISOString(),
+          lastActivatedAt: Date.now()
         });
         alert('✅ Ad published successfully!');
         // Reset form
@@ -187,24 +453,23 @@
         loadAds();
       } catch (error) {
         console.error('Error adding ad:', error);
-        showError(error.message || 'Failed to publish ad. Check Firestore rules & console.');
+        showError(formError, error.message || 'Failed to publish ad. Check console.');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Publish Ad';
+        btn.textContent = '✨ Publish Ad';
       }
     });
 
-    // Load & Display Ads
     async function loadAds() {
       const list = document.getElementById('adsList');
-      list.innerHTML = 'Loading...';
+      list.innerHTML = '<div class="empty">Loading ads...</div>';
       
       try {
         const q = query(adsCollection, orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
-          list.innerHTML = '<div class="empty">No ads created yet.</div>';
+          list.innerHTML = '<div class="empty">No ads created yet. Add your first ad above! ✨</div>';
           return;
         }
 
@@ -213,20 +478,26 @@
           const ad = { id: docSnap.id, ...docSnap.data() };
           const statusClass = ad.isActive ? 'status-active' : 'status-paused';
           const statusText = ad.isActive ? '● Active' : '● Paused';
+          const statusEmoji = ad.isActive ? '🟢' : '🟡';
           
           html += `
             <div class="ad-card">
-              <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/80x60?text=Ad'">
+              <img src="${ad.imageUrl}" onerror="this.src='https://via.placeholder.com/80x60/e0e0e0/666?text=Ad'" alt="Ad">
               <div class="ad-info">
-                <div class="ad-title">${ad.description.substring(0, 50)}${ad.description.length > 50 ? '...' : ''}</div>
-                <div class="ad-stats">👁 ${ad.views || 0} views | 🖱 ${ad.clicks || 0} clicks</div>
-                <span class="status-badge ${statusClass}">${statusText}</span>
-              </div>
-              <div class="ad-actions">
-                <button class="btn ${ad.isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleAd('${ad.id}', ${!ad.isActive})">
-                  ${ad.isActive ? '⏸ Pause' : '▶ Play'}
-                </button>
-                <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">🗑 Delete</button>
+                <div class="ad-title">${escapeHtml(ad.description)}</div>
+                <div class="ad-desc">${escapeHtml(ad.buttonText)} → ${ad.buttonUrl ? shortenUrl(ad.buttonUrl) : 'No link'}</div>
+                <div class="ad-stats">
+                  <span>👁 ${ad.views || 0} views</span>
+                  <span>🖱 ${ad.clicks || 0} clicks</span>
+                  <span>📅 ${new Date(ad.createdAt).toLocaleDateString()}</span>
+                </div>
+                <span class="status-badge ${statusClass}">${statusEmoji} ${statusText}</span>
+                <div class="ad-actions">
+                  <button class="btn ${ad.isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleAd('${ad.id}', ${!ad.isActive})">
+                    ${ad.isActive ? '⏸ Pause' : '▶ Play'}
+                  </button>
+                  <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">🗑 Delete</button>
+                </div>
               </div>
             </div>
           `;
@@ -235,33 +506,49 @@
         
       } catch (error) {
         console.error('Error loading ads:', error);
-        list.innerHTML = `<div class="empty" style="color:#c62828;">Error: ${error.message}</div>`;
+        list.innerHTML = `<div class="empty" style="color:#c62828;">Error loading ads: ${error.message}</div>`;
       }
     }
 
-    // Toggle Ad Status (Pause/Play)
+    // 🆕 Play updates timestamp → resets user localStorage tracking
     window.toggleAd = async (id, newStatus) => {
       try {
-        await updateDoc(doc(db, "ads", id), { isActive: newStatus });
+        const updateData = { isActive: newStatus };
+        if (newStatus) updateData.lastActivatedAt = Date.now(); // Timestamp reset
+        await updateDoc(doc(db, "ads", id), updateData);
         loadAds();
       } catch (error) {
-        showError('Failed to update: ' + error.message);
+        alert('Failed to update: ' + error.message);
       }
     };
 
-    // Delete Ad
     window.deleteAd = async (id) => {
-      if (!confirm('Delete this ad permanently?')) return;
+      if (!confirm('Delete this ad permanently? This cannot be undone.')) return;
       try {
         await deleteDoc(doc(db, "ads", id));
         loadAds();
       } catch (error) {
-        showError('Failed to delete: ' + error.message);
+        alert('Failed to delete: ' + error.message);
       }
     };
 
-    // Initial load
-    loadAds();
+    // Helper: Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Helper: Shorten URL for display
+    function shortenUrl(url) {
+      try {
+        const u = new URL(url);
+        return u.hostname + (u.pathname.length > 1 ? u.pathname.substring(0,15) : '');
+      } catch { return url.substring(0, 30); }
+    }
+
+    // ===== INIT CHECK =====
+    checkLogin();
   </script>
 </body>
 </html>
