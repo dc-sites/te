@@ -162,33 +162,56 @@ const sharedStyles = `
   </style>
 `;
 
-// ===== NORMAL AD (Non-skippable, localStorage tracked) =====
+// ===== NORMAL AD (Shows ONCE per user until admin reactivates) =====
 async function showNormalAd() {
   const container = document.getElementById('popup-ad-container');
   if (!container) return;
   
   try {
+    // Fetch only active NORMAL ads
     const q = query(collection(db, "ads"), where("isActive", "==", true), where("adType", "==", "normal"));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return;
 
     const activeAds = [];
-    snapshot.forEach(docSnap => activeAds.push({ id: docSnap.id, ...docSnap.data() }));
-
-    let seenAds = JSON.parse(localStorage.getItem('seen_ads') || '{}');
-    if (Array.isArray(seenAds)) seenAds = {};
-
-    const unseenAds = activeAds.filter(ad => {
-      const lastSeen = seenAds[ad.id] || 0;
-      const lastActive = ad.lastActivatedAt || 0;
-      return lastActive > lastSeen;
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      // Ensure lastActivatedAt exists (fallback to createdAt timestamp)
+      if (!data.lastActivatedAt && data.createdAt) {
+        data.lastActivatedAt = new Date(data.createdAt).getTime();
+      }
+      activeAds.push({ id: docSnap.id, ...data });
     });
 
-    if (unseenAds.length === 0) return;
-    const ad = unseenAds[Math.floor(Math.random() * unseenAds.length)];
+    // Get seen ads from localStorage (format: { adId: timestamp })
+    let seenAds = JSON.parse(localStorage.getItem('learny_seen_normal_ads') || '{}');
+    // Migrate old array format if exists
+    if (Array.isArray(seenAds)) {
+      const migrated = {};
+      seenAds.forEach(id => migrated[id] = Date.now());
+      seenAds = migrated;
+      localStorage.setItem('learny_seen_normal_ads', JSON.stringify(seenAds));
+    }
 
+    // Filter: Show only if ad was activated AFTER user last saw it
+    const eligibleAds = activeAds.filter(ad => {
+      const userLastSeen = seenAds[ad.id] || 0;
+      const adLastActivated = ad.lastActivatedAt || 0;
+      // Show if: admin reactivated after user saw it, OR user never saw it
+      return adLastActivated > userLastSeen;
+    });
+
+    if (eligibleAds.length === 0) return;
+    
+    // Pick random eligible ad
+    const ad = eligibleAds[Math.floor(Math.random() * eligibleAds.length)];
+    
+    // Track view
     await updateDoc(doc(db, "ads", ad.id), { views: increment(1) });
+    
+    // Render popup
     renderNormalAd(container, ad);
+    
   } catch (error) {
     console.error("Error loading normal ad:", error);
   }
@@ -210,23 +233,34 @@ function renderNormalAd(container, ad) {
 
   const infoIcon = container.querySelector('#infoIcon');
   const premiumTip = container.querySelector('#premiumTip');
+  
+  // Info icon tooltip
   infoIcon?.addEventListener('click', (e) => {
     e.stopPropagation();
     premiumTip?.classList.toggle('show');
     setTimeout(() => premiumTip?.classList.remove('show'), 3000);
   });
 
+  // Button click: track + mark as seen + close
   container.querySelector('#adBtn')?.addEventListener('click', async () => {
+    // Track click
     await updateDoc(doc(db, "ads", ad.id), { clicks: increment(1) });
     
-    let seenAds = JSON.parse(localStorage.getItem('seen_ads') || '{}');
+    // Mark as seen in localStorage with current timestamp
+    let seenAds = JSON.parse(localStorage.getItem('learny_seen_normal_ads') || '{}');
     seenAds[ad.id] = Date.now();
-    localStorage.setItem('seen_ads', JSON.stringify(seenAds));
-
+    localStorage.setItem('learny_seen_normal_ads', JSON.stringify(seenAds));
+    
+    // Remove popup
     container.innerHTML = '';
-    if (ad.buttonUrl?.trim()) window.open(ad.buttonUrl, '_blank');
+    
+    // Open URL if provided
+    if (ad.buttonUrl?.trim()) {
+      window.open(ad.buttonUrl, '_blank');
+    }
   });
 
+  // Prevent closing by clicking overlay
   container.addEventListener('click', (e) => e.stopPropagation());
 }
 
@@ -260,7 +294,7 @@ function renderSkippableAd(container, ad) {
     <div class="popup-overlay">
       <div class="popup-box">
         <div class="info-icon" id="infoIcon">ⓘ</div>
-        <div class="premium-tip" id="premiumTip">🎁 <a href="premium.html" target="_blank">Get Premium</a> to hide ads</div>
+        <div class="premium-tip" id="premiumTip">🎁gg <a href="premium.html" target="_blank">Get Premium</a> to hide ads</div>
         <button class="skip-timer" id="skipTimer">Skip in ${timer}s</button>
         <img src="${ad.imageUrl}" alt="Ad" class="popup-img" onerror="this.src='https://via.placeholder.com/380x200?text=Ad+Image'">
         <p class="popup-desc">${escapeHtml(ad.description)}</p>
@@ -274,7 +308,7 @@ function renderSkippableAd(container, ad) {
   const infoIcon = container.querySelector('#infoIcon');
   const premiumTip = container.querySelector('#premiumTip');
 
-  // Countdown timer
+  // Countdown: enable skip after 3 seconds
   const countdown = setInterval(() => {
     timer--;
     if (timer > 0) {
@@ -287,14 +321,14 @@ function renderSkippableAd(container, ad) {
     }
   }, 1000);
 
-  // Info icon
+  // Info icon tooltip
   infoIcon?.addEventListener('click', (e) => {
     e.stopPropagation();
     premiumTip?.classList.toggle('show');
     setTimeout(() => premiumTip?.classList.remove('show'), 3000);
   });
 
-  // Skip button
+  // Skip button click
   skipTimer?.addEventListener('click', (e) => {
     e.stopPropagation();
     if (canSkip) {
@@ -324,8 +358,9 @@ function escapeHtml(text) {
 
 // ===== INIT =====
 window.addEventListener('load', () => {
+  // Small delay for better UX
   setTimeout(() => {
-    showNormalAd();
-    showSkippableAd();
+    showNormalAd();   // Shows once per user
+    showSkippableAd(); // Shows every reload
   }, 1500);
 });
